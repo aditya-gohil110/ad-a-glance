@@ -233,4 +233,4 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
   }
   button, input { font-family: inherit; }
   h1, h2, h3 { font-family: ${B.font.display}; margin: 0; }
-`;ei.createRoot(document.getElementById(`root`)).render((0,$.jsxs)(S.StrictMode,{children:[(0,$.jsx)(ZU,{}),(0,$.jsx)(An,{children:(0,$.jsx)(XU,{})})]}));
+`;ei.createRoot(document.getElementById(`root`)).render((0,$.jsxs)(S.StrictMode,{children:[(0,$.jsx)(ZU,{}),(0,$.jsx)(An,{basename:`/ad-a-glance/`,children:(0,$.jsx)(XU,{})})]}));
