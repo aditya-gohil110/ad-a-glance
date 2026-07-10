@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, Legend } from "recharts";
 import Papa from "papaparse";
+import { FaFacebookF, FaInstagram, FaGoogle, FaLinkedinIn } from "react-icons/fa";
 import { getSummary } from "../api/client";
 import { theme } from "../theme";
 import type { MetricsSummaryResponse, PlatformSummary } from "../types";
@@ -118,9 +119,9 @@ function buildSparkline(values: number[], width = 220, height = 32) {
   return { line, area };
 }
 
-function widget(label: string, initial: string, accent: string, p: PlatformSummary, path: string) {
+function widget(label: string, Icon: React.ComponentType<{ size?: number }>, accent: string, p: PlatformSummary, path: string) {
   return {
-    label, initial, accent, path,
+    label, Icon, accent, path,
     totals: p.totals, prevTotals: p.previousTotals,
     delta: pctDelta(p.totals.spend, p.previousTotals.spend),
     sparkline: buildSparkline(p.dailyData.map((d) => d.spend)),
@@ -139,10 +140,10 @@ export default function Dashboard() {
   const widgets = useMemo(() => {
     if (!data) return [];
     return [
-      widget("Facebook", "f", theme.colors.facebook, data.meta.facebook, "/meta?view=facebook"),
-      widget("Instagram", "ig", theme.colors.instagram, data.meta.instagram, "/meta?view=instagram"),
-      widget("Google", "g", theme.colors.google, data.google, "/google"),
-      widget("LinkedIn", "in", theme.colors.linkedin, data.linkedin, "/linkedin"),
+      widget("Facebook", FaFacebookF, theme.colors.facebook, data.meta.facebook, "/meta?view=facebook"),
+      widget("Instagram", FaInstagram, theme.colors.instagram, data.meta.instagram, "/meta?view=instagram"),
+      widget("Google", FaGoogle, theme.colors.google, data.google, "/google"),
+      widget("LinkedIn", FaLinkedinIn, theme.colors.linkedin, data.linkedin, "/linkedin"),
     ];
   }, [data]);
 
@@ -248,7 +249,7 @@ export default function Dashboard() {
             {widgets.map((w) => (
               <Card key={w.label} $accent={w.accent} onClick={() => navigate(w.path)}>
                 <CardTop>
-                  <Badge $bg={w.accent}>{w.initial}</Badge>
+                  <Badge $bg={w.accent}><w.Icon size={12} /></Badge>
                   <PlatformName>{w.label}</PlatformName>
                 </CardTop>
                 <Spend>${w.totals.spend.toLocaleString(undefined, { maximumFractionDigits: 0 })}</Spend>

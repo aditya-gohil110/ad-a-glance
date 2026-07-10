@@ -1,5 +1,8 @@
 import { Routes, Route, NavLink } from "react-router-dom";
 import styled from "styled-components";
+import { MdSpaceDashboard } from "react-icons/md";
+import { SiMeta } from "react-icons/si";
+import { FaGoogle, FaLinkedinIn } from "react-icons/fa";
 import { theme } from "./theme";
 import Dashboard from "./pages/Dashboard";
 import NetworkDetailPage from "./pages/NetworkDetailPage";
@@ -41,6 +44,9 @@ const Nav = styled.nav`
 `;
 
 const NavItem = styled(NavLink)`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   text-decoration: none;
   color: ${theme.colors.textMuted};
   font-weight: 500;
@@ -62,10 +68,10 @@ export default function App() {
       <Header>
         <Brand><Dot />Ad a glance</Brand>
         <Nav>
-          <NavItem to="/" end>Dashboard</NavItem>
-          <NavItem to="/meta">Meta</NavItem>
-          <NavItem to="/google">Google</NavItem>
-          <NavItem to="/linkedin">LinkedIn</NavItem>
+          <NavItem to="/" end><MdSpaceDashboard size={15} />Dashboard</NavItem>
+          <NavItem to="/meta"><SiMeta size={14} />Meta</NavItem>
+          <NavItem to="/google"><FaGoogle size={13} />Google</NavItem>
+          <NavItem to="/linkedin"><FaLinkedinIn size={14} />LinkedIn</NavItem>
         </Nav>
       </Header>
       <Routes>

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
+import { FaFacebookF, FaInstagram, FaGoogle, FaLinkedinIn } from "react-icons/fa";
 import { ComposedChart, Area, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, Legend } from "recharts";
 import Papa from "papaparse";
 import { getInsights } from "../api/client";
@@ -19,16 +20,19 @@ type ChartRow = {
   prevSpend?: number;
 };
 
-const NETWORK_META: Record<NetworkParam, { label: string; accents: string[] }> = {
-  meta: { label: "Meta", accents: [theme.colors.facebook, theme.colors.instagram] },
-  google: { label: "Google", accents: [theme.colors.google] },
-  linkedin: { label: "LinkedIn", accents: [theme.colors.linkedin] },
+const NETWORK_META: Record<NetworkParam, { label: string; accents: string[]; icons: React.ComponentType<{ size?: number }>[] }> = {
+  meta: { label: "Meta", accents: [theme.colors.facebook, theme.colors.instagram], icons: [FaFacebookF, FaInstagram] },
+  google: { label: "Google", accents: [theme.colors.google], icons: [FaGoogle] },
+  linkedin: { label: "LinkedIn", accents: [theme.colors.linkedin], icons: [FaLinkedinIn] },
 };
 
 const Page = styled.div`padding: 2rem; max-width: 1100px; margin: 0 auto;`;
 const HeaderRow = styled.div`display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.25rem;`;
-const Dots = styled.div`display: flex; gap: 3px;`;
-const Dot = styled.span<{ $bg: string }>`width: 12px; height: 12px; border-radius: 50%; background: ${(p) => p.$bg};`;
+const IconRow = styled.div`display: flex; gap: 6px;`;
+const IconBadge = styled.span<{ $bg: string }>`
+  width: 24px; height: 24px; border-radius: 50%; background: ${(p) => p.$bg};
+  color: white; display: flex; align-items: center; justify-content: center;
+`;
 const Title = styled.h1`font-size: 1.5rem;`;
 const Sub = styled.p`color: ${theme.colors.textMuted}; font-size: 0.9rem; margin: 0 0 1.25rem;`;
 
@@ -271,7 +275,12 @@ export default function NetworkDetailPage({ network }: { network: NetworkParam }
   return (
     <Page>
       <HeaderRow>
-        <Dots>{meta.accents.map((c, i) => <Dot key={i} $bg={c} />)}</Dots>
+        <IconRow>
+          {meta.accents.map((c, i) => {
+            const Icon = meta.icons[i];
+            return <IconBadge key={i} $bg={c}><Icon size={12} /></IconBadge>;
+          })}
+        </IconRow>
         <Title>{meta.label}</Title>
       </HeaderRow>
       <Sub>{formatDateLong(range.start)} – {formatDateLong(range.end)} · vs. previous period</Sub>
