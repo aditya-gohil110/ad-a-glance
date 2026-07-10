@@ -7,7 +7,7 @@ A cross-platform advertising performance dashboard built with React and TypeScri
 
 https://aditya-gohil110.github.io/ad-a-glance/
 
-Alternate deployment (Netlify): https://dynamic-semifreddo-264bce.netlify.app/
+Alternate deployment (Netlify): https://aditya-gohil-ad-a-glance.netlify.app/
 
 No installation is required to review this project. The link above is a fully functional, deployed build. The setup instructions further down are provided only for anyone who wants to run the project locally.
 
