@@ -9,6 +9,16 @@ import type { NetworkParam, DailyMetrics, FacebookDailyMetrics, InstagramDailyMe
 
 type MetaView = "combined" | "facebook" | "instagram";
 
+type ChartRow = {
+  date: string;
+  facebookSpend?: number;
+  instagramSpend?: number;
+  prevFacebookSpend?: number;
+  prevInstagramSpend?: number;
+  spend?: number;
+  prevSpend?: number;
+};
+
 const NETWORK_META: Record<NetworkParam, { label: string; accents: string[] }> = {
   meta: { label: "Meta", accents: [theme.colors.facebook, theme.colors.instagram] },
   google: { label: "Google", accents: [theme.colors.google] },
@@ -78,8 +88,6 @@ const BackButton = styled.button`
   border-radius: 8px; padding: 0.5rem 1rem; font-size: 0.85rem; font-weight: 600; cursor: pointer; white-space: nowrap;
   &:hover { background: ${theme.colors.bg}; }
 `;
-
-const LoadingText = styled.p`color: ${theme.colors.textMuted}; font-size: 0.9rem;`;
 
 const pulse = keyframes`
   0%, 100% { opacity: 0.5; }
@@ -203,7 +211,7 @@ export default function NetworkDetailPage({ network }: { network: NetworkParam }
     };
   }, [data, network, subView]);
 
-  const chartData = useMemo(() => {
+  const chartData = useMemo<ChartRow[]>(() => {
     if (!data) return [];
     if (network === "meta") {
       const fbDaily: FacebookDailyMetrics[] = data.dailyData.facebook;
