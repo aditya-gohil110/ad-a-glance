@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
-import { FaFacebookF, FaInstagram, FaGoogle, FaLinkedinIn } from "react-icons/fa";
 import { ComposedChart, Area, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, Legend } from "recharts";
 import Papa from "papaparse";
 import { getInsights } from "../api/client";
@@ -9,6 +8,7 @@ import { theme } from "../theme";
 import type { NetworkParam, DailyMetrics, FacebookDailyMetrics, InstagramDailyMetrics } from "../types";
 
 type MetaView = "combined" | "facebook" | "instagram";
+type ExtraMetric = { label: string; value: number; currency?: boolean };
 
 type ChartRow = {
   date: string;
@@ -20,19 +20,16 @@ type ChartRow = {
   prevSpend?: number;
 };
 
-const NETWORK_META: Record<NetworkParam, { label: string; accents: string[]; icons: React.ComponentType<{ size?: number }>[] }> = {
-  meta: { label: "Meta", accents: [theme.colors.facebook, theme.colors.instagram], icons: [FaFacebookF, FaInstagram] },
-  google: { label: "Google", accents: [theme.colors.google], icons: [FaGoogle] },
-  linkedin: { label: "LinkedIn", accents: [theme.colors.linkedin], icons: [FaLinkedinIn] },
+const NETWORK_META: Record<NetworkParam, { label: string; accents: string[] }> = {
+  meta: { label: "Meta", accents: [theme.colors.facebook, theme.colors.instagram] },
+  google: { label: "Google", accents: [theme.colors.google] },
+  linkedin: { label: "LinkedIn", accents: [theme.colors.linkedin] },
 };
 
 const Page = styled.div`padding: 2rem; max-width: 1100px; margin: 0 auto;`;
 const HeaderRow = styled.div`display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.25rem;`;
-const IconRow = styled.div`display: flex; gap: 6px;`;
-const IconBadge = styled.span<{ $bg: string }>`
-  width: 24px; height: 24px; border-radius: 50%; background: ${(p) => p.$bg};
-  color: white; display: flex; align-items: center; justify-content: center;
-`;
+const Dots = styled.div`display: flex; gap: 3px;`;
+const Dot = styled.span<{ $bg: string }>`width: 12px; height: 12px; border-radius: 50%; background: ${(p) => p.$bg};`;
 const Title = styled.h1`font-size: 1.5rem;`;
 const Sub = styled.p`color: ${theme.colors.textMuted}; font-size: 0.9rem; margin: 0 0 1.25rem;`;
 
@@ -106,6 +103,11 @@ const SkeletonBlock = styled.div<{ $h: string; $w?: string }>`
   animation: ${pulse} 1.4s ease-in-out infinite;
 `;
 
+const SectionLabel = styled.div`
+  font-size: 0.75rem; font-weight: 600; color: ${theme.colors.textMuted};
+  text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 0.75rem;
+`;
+
 const KpiRow = styled.div`display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem;`;
 const Kpi = styled.div`border: 1px solid ${theme.colors.border}; border-radius: ${theme.radius}; padding: 1rem 1.25rem; min-width: 150px; background: ${theme.colors.surface}; box-shadow: ${theme.shadow};`;
 const KpiLabel = styled.div`font-size: 0.75rem; color: ${theme.colors.textMuted}; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.3rem;`;
@@ -139,6 +141,10 @@ function formatDateLong(iso: string) {
 function pctDelta(curr: number, prev: number) {
   if (prev === 0) return 0;
   return ((curr - prev) / prev) * 100;
+}
+
+function sum(arr: any[], key: string): number {
+  return arr.reduce((acc, d) => acc + (Number(d[key]) || 0), 0);
 }
 
 function metaTotals(view: MetaView, totals: any, prevTotals: any) {
@@ -206,14 +212,63 @@ export default function NetworkDetailPage({ network }: { network: NetworkParam }
       curr = data.totals;
       prev = data.previousTotals;
     }
+    const ctr = curr.impressions > 0 ? (curr.clicks / curr.impressions) * 100 : 0;
+    const cpc = curr.clicks > 0 ? curr.spend / curr.clicks : 0;
+    const cpm = curr.impressions > 0 ? (curr.spend / curr.impressions) * 1000 : 0;
+    const prevCtr = prev.impressions > 0 ? (prev.clicks / prev.impressions) * 100 : 0;
+    const prevCpc = prev.clicks > 0 ? prev.spend / prev.clicks : 0;
+    const prevCpm = prev.impressions > 0 ? (prev.spend / prev.impressions) * 1000 : 0;
     return {
       spend: curr.spend, impressions: curr.impressions, clicks: curr.clicks, conversions: curr.conversions,
+      ctr, cpc, cpm,
       deltas: {
         spend: pctDelta(curr.spend, prev.spend), impressions: pctDelta(curr.impressions, prev.impressions),
         clicks: pctDelta(curr.clicks, prev.clicks), conversions: pctDelta(curr.conversions, prev.conversions),
+        ctr: pctDelta(ctr, prevCtr), cpc: pctDelta(cpc, prevCpc), cpm: pctDelta(cpm, prevCpm),
       },
     };
   }, [data, network, subView]);
+
+  const extraMetrics = useMemo<ExtraMetric[] | null>(() => {
+    if (!data) return null;
+    if (network === "meta") {
+      const fbDaily: FacebookDailyMetrics[] = data.dailyData.facebook;
+      const igDaily: InstagramDailyMetrics[] = data.dailyData.instagram;
+      if (subView === "facebook") {
+        return [
+          { label: "Reach", value: sum(fbDaily, "reach") },
+          { label: "Likes", value: sum(fbDaily, "likes") },
+          { label: "Comments", value: sum(fbDaily, "comments") },
+          { label: "Shares", value: sum(fbDaily, "shares") },
+        ];
+      }
+      if (subView === "instagram") {
+        return [
+          { label: "Reach", value: sum(igDaily, "reach") },
+          { label: "Likes", value: sum(igDaily, "likes") },
+          { label: "Comments", value: sum(igDaily, "comments") },
+          { label: "Saves", value: sum(igDaily, "saves") },
+        ];
+      }
+      return [
+        { label: "Reach", value: sum(fbDaily, "reach") + sum(igDaily, "reach") },
+        { label: "Likes", value: sum(fbDaily, "likes") + sum(igDaily, "likes") },
+        { label: "Comments", value: sum(fbDaily, "comments") + sum(igDaily, "comments") },
+      ];
+    }
+    const daily = data.dailyData as any[];
+    if (network === "google") {
+      return [
+        { label: "Cost / conversion", value: combined && combined.conversions > 0 ? combined.spend / combined.conversions : 0, currency: true },
+      ];
+    }
+    return [
+      { label: "Likes", value: sum(daily, "likes") },
+      { label: "Comments", value: sum(daily, "comments") },
+      { label: "Shares", value: sum(daily, "shares") },
+      { label: "Follows", value: sum(daily, "follows") },
+    ];
+  }, [data, network, subView, combined]);
 
   const chartData = useMemo<ChartRow[]>(() => {
     if (!data) return [];
@@ -257,10 +312,17 @@ export default function NetworkDetailPage({ network }: { network: NetworkParam }
         }));
       }
     } else {
-      rows = (data.dailyData as DailyMetrics[]).map((d) => ({
-        date: d.date, network, impressions: d.impressions, clicks: d.clicks, spend: d.spend,
-        conversions: d.conversions, ctr: d.ctr, cpc: d.cpc, cpm: d.cpm,
-      }));
+      rows = (data.dailyData as any[]).map((d) => {
+        const row: Record<string, any> = {
+          date: d.date, network, impressions: d.impressions, clicks: d.clicks, spend: d.spend,
+          conversions: d.conversions, ctr: d.ctr, cpc: d.cpc, cpm: d.cpm,
+        };
+        if (network === "google") row.cost_per_conversion = d.costPerConversion;
+        if (network === "linkedin") {
+          row.likes = d.likes; row.comments = d.comments; row.shares = d.shares; row.follows = d.follows;
+        }
+        return row;
+      });
     }
     const csv = Papa.unparse(rows);
     const blob = new Blob([csv], { type: "text/csv" });
@@ -275,12 +337,7 @@ export default function NetworkDetailPage({ network }: { network: NetworkParam }
   return (
     <Page>
       <HeaderRow>
-        <IconRow>
-          {meta.accents.map((c, i) => {
-            const Icon = meta.icons[i];
-            return <IconBadge key={i} $bg={c}><Icon size={12} /></IconBadge>;
-          })}
-        </IconRow>
+        <Dots>{meta.accents.map((c, i) => <Dot key={i} $bg={c} />)}</Dots>
         <Title>{meta.label}</Title>
       </HeaderRow>
       <Sub>{formatDateLong(range.start)} – {formatDateLong(range.end)} · vs. previous period</Sub>
@@ -330,12 +387,16 @@ export default function NetworkDetailPage({ network }: { network: NetworkParam }
 
       {!error && data && combined && (
         <>
+          <SectionLabel>Performance</SectionLabel>
           <KpiRow>
             {([
               ["Spend", combined.spend, combined.deltas.spend, (v: number) => `$${v.toLocaleString(undefined, { maximumFractionDigits: 0 })}`],
               ["Impressions", combined.impressions, combined.deltas.impressions, (v: number) => v.toLocaleString()],
               ["Clicks", combined.clicks, combined.deltas.clicks, (v: number) => v.toLocaleString()],
               ["Conversions", combined.conversions, combined.deltas.conversions, (v: number) => `${v}`],
+              ["CTR", combined.ctr, combined.deltas.ctr, (v: number) => `${v.toFixed(2)}%`],
+              ["CPC", combined.cpc, combined.deltas.cpc, (v: number) => `$${v.toFixed(2)}`],
+              ["CPM", combined.cpm, combined.deltas.cpm, (v: number) => `$${v.toFixed(2)}`],
             ] as const).map(([label, val, delta, fmt]) => (
               <Kpi key={label}>
                 <KpiLabel>{label}</KpiLabel>
@@ -346,6 +407,20 @@ export default function NetworkDetailPage({ network }: { network: NetworkParam }
               </Kpi>
             ))}
           </KpiRow>
+
+          {extraMetrics && extraMetrics.length > 0 && (
+            <>
+              <SectionLabel>Engagement</SectionLabel>
+              <KpiRow>
+                {extraMetrics.map((m) => (
+                  <Kpi key={m.label}>
+                    <KpiLabel>{m.label}</KpiLabel>
+                    <KpiValue>{m.currency ? `$${m.value.toFixed(2)}` : Math.round(m.value).toLocaleString()}</KpiValue>
+                  </Kpi>
+                ))}
+              </KpiRow>
+            </>
+          )}
 
           <ChartCard>
             <ResponsiveContainer width="100%" height={300}>
