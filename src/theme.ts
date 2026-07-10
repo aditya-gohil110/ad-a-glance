@@ -1,0 +1,26 @@
+export const theme = {
+  colors: {
+    bg: "#17171B",
+    surface: "#201F26",
+    border: "#2E2C36",
+    text: "#F5F3F7",
+    textMuted: "#A7A3B0",
+    primary: "#FF2E88",
+    accent: "#00E5FF",
+    positive: "#39FF88",
+    negative: "#FF5C5C",
+    positiveBg: "rgba(57, 255, 136, 0.12)",
+    negativeBg: "rgba(255, 92, 92, 0.12)",
+    facebook: "#1877F2",
+    instagram: "#E1306C",
+    google: "#10B981",
+    linkedin: "#38BDF8",
+  },
+  font: {
+    display: "'Space Grotesk', sans-serif",
+    body: "'Inter', sans-serif",
+    mono: "'IBM Plex Mono', monospace",
+  },
+  radius: "12px",
+  shadow: "0 1px 2px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.5)",
+};
