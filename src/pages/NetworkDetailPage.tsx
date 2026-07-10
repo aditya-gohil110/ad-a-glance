@@ -307,8 +307,10 @@ export default function NetworkDetailPage({ network }: { network: NetworkParam }
         rows = fbDaily.map((d, i) => ({
           date: d.date, network: "meta",
           facebook_spend: d.spend, facebook_impressions: d.impressions, facebook_clicks: d.clicks, facebook_conversions: d.conversions,
+          facebook_reach: d.reach, facebook_likes: d.likes, facebook_comments: d.comments,
           instagram_spend: igDaily[i]?.spend, instagram_impressions: igDaily[i]?.impressions,
           instagram_clicks: igDaily[i]?.clicks, instagram_conversions: igDaily[i]?.conversions,
+          instagram_reach: igDaily[i]?.reach, instagram_likes: igDaily[i]?.likes, instagram_comments: igDaily[i]?.comments,
         }));
       }
     } else {

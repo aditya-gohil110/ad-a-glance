@@ -47,7 +47,8 @@ npm run build
 One page per network: Meta, Google, and LinkedIn, each with:
 
 - A custom date range picker (7 to 30 days), with human-readable date confirmations shown beneath the native inputs.
-- KPI cards for spend, impressions, clicks, and conversions, each with a percentage change against the previous period.
+- A "Performance" row of KPI cards (spend, impressions, clicks, conversions, CTR, CPC, CPM), each with a percentage change against the previous period.
+- An "Engagement" row of platform-specific metrics: reach, likes, comments, and shares for Facebook; reach, likes, comments, and saves for Instagram; cost per conversion for Google; likes, comments, shares, and follows for LinkedIn.
 - A trend chart combining a filled area for the current period with a dashed overlay for the previous period, so the comparison is visible as a shape, not only as a number.
 - A CSV export that reflects exactly what's on screen: the selected network, the selected Meta sub-view, and the selected date range.
 - Inline error handling for invalid date ranges: an error banner appears with a button that reverts to the last successfully loaded range, without requiring a page refresh. The date controls remain interactive throughout.
@@ -57,7 +58,7 @@ The Meta page additionally includes a Combined / Facebook / Instagram toggle (se
 
 ### Design
 
-A dark, high-contrast theme ("Billboard") built around magenta and cyan accents, referencing out-of-home advertising. Space Grotesk is used for headings, Inter for body text, and IBM Plex Mono for all numeric figures, so tabular data reads distinctly from prose. Each platform is assigned a consistent accent color across the dashboard cards, chart lines, and detail page headers.
+A dark, high-contrast theme ("Billboard") built around magenta and cyan accents, referencing out-of-home advertising. Space Grotesk is used for headings, Inter for body text, and IBM Plex Mono for all numeric figures, so tabular data reads distinctly from prose. Each platform is assigned a consistent accent color across the dashboard cards, chart lines, and detail page headers. Platform badges throughout the app use official brand icons via react-icons (Font Awesome and Simple Icons) rather than custom artwork.
 
 ## Design Decisions
 
