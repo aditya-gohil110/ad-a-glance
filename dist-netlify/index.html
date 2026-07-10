@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <script type="text/javascript">
+      (function(l) {
+        if (l.search[1] === '/') {
+          var decoded = l.search.slice(1).split('&').map(function(s) {
+            return s.replace(/~and~/g, '&');
+          }).join('?');
+          window.history.replaceState(null, null, l.pathname.slice(0, -1) + decoded + l.hash);
+        }
+      }(window.location));
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ad a glance</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23201F26'/%3E%3Crect x='7' y='18' width='5' height='9' rx='1.5' fill='%2300E5FF'/%3E%3Crect x='14' y='12' width='5' height='15' rx='1.5' fill='%23FF2E88'/%3E%3Crect x='21' y='6' width='5' height='21' rx='1.5' fill='%2300E5FF'/%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <script type="module" crossorigin src="/assets/index-DeHK7CFh.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>

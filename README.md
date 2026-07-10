@@ -7,6 +7,8 @@ A cross-platform advertising performance dashboard built with React and TypeScri
 
 https://aditya-gohil110.github.io/ad-a-glance/
 
+Alternate deployment (Netlify): https://dynamic-semifreddo-264bce.netlify.app/
+
 No installation is required to review this project. The link above is a fully functional, deployed build. The setup instructions further down are provided only for anyone who wants to run the project locally.
 
 ## Tech Stack
@@ -89,7 +91,10 @@ Base URL: `https://eulerity-hackathon.appspot.com`
 
 ## Deployment
 
-Hosted on GitHub Pages, built via `gh-pages` from the `dist` output. Client-side routes are preserved on direct navigation and page refresh through a redirect in `404.html` that GitHub Pages serves for any unmatched path, decoded back into the correct route before the app mounts.
+Deployed to two platforms:
+
+- GitHub Pages, built via `gh-pages` from the `dist` output. Client-side routes are preserved on direct navigation and page refresh through a redirect in `404.html` that GitHub Pages serves for any unmatched path, decoded back into the correct route before the app mounts.
+- Netlify, built separately with the base path set to root (`vite build --base=/`) rather than the `/ad-a-glance/` subpath GitHub Pages requires, since Netlify serves from the domain root. Client-side routing is preserved via a `_redirects` rule rather than the GitHub Pages workaround, since Netlify supports SPA fallback natively.
 
 ## Known Limitations
 
